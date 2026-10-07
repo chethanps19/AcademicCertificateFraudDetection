@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin - Certificate Registration</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            margin: 0;
+        }
+
+        .header {
+            background: #1f3c88;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 650px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #1f3c88;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            background: #1f3c88;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #162d68;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            word-break: break-word;
+        }
+
+        .success {
+            display: block !important;
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            color: #1b5e20;
+        }
+
+        .error {
+            display: block !important;
+            background: #ffecec;
+            border: 1px solid #ffb3b3;
+            color: #b30000;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>Academic Certificate Fraud Detection</h1>
+    <p>Administrator Panel</p>
+</div>
+
+<div class="container">
+
+    <h2>Register Certificate</h2>
+
+    <label>Student Name</label>
+    <input
+        type="text"
+        id="student_name"
+        placeholder="Enter student name"
+    >
+
+    <label>Certificate ID</label>
+    <input
+        type="text"
+        id="certificate_id"
+        placeholder="Example: CERT002"
+    >
+
+    <label>University / Institution</label>
+    <input
+        type="text"
+        id="university"
+        placeholder="Enter university name"
+    >
+
+    <label>Certificate PDF</label>
+    <input
+        type="file"
+        id="certificate"
+        accept=".pdf"
+    >
+
+    <button onclick="registerCertificate()">
+        REGISTER CERTIFICATE
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+function registerCertificate() {
+
+    const studentName =
+        document.getElementById("student_name").value.trim();
+
+    const certificateId =
+        document.getElementById("certificate_id").value.trim();
+
+    const university =
+        document.getElementById("university").value.trim();
+
+    const certificate =
+        document.getElementById("certificate").files[0];
+
+    const result =
+        document.getElementById("result");
+
+
+    if (!studentName || !certificateId || !university || !certificate) {
+
+        result.className = "error";
+
+        result.innerHTML =
+            "Please fill all fields and upload the certificate.";
+
+        return;
+    }
+
+
+    const formData = new FormData();
+
+    formData.append("student_name", studentName);
+    formData.append("certificate_id", certificateId);
+    formData.append("university", university);
+    formData.append("certificate", certificate);
+
+
+    result.className = "success";
+    result.innerHTML = "Registering certificate...";
+
+
+    fetch("/admin/register", {
+        method: "POST",
+        body: formData
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.success) {
+
+            result.className = "success";
+
+            result.innerHTML =
+                "✅ Certificate Registered Successfully!<br><br>" +
+
+                "Certificate ID: " +
+                data.certificate_id +
+                "<br><br>" +
+
+                "SHA-256 Hash:<br>" +
+                data.certificate_hash +
+                "<br><br>" +
+
+                "✓ Added to Database<br>" +
+                "✓ Added to Blockchain";
+
+        } else {
+
+            result.className = "error";
+
+            result.innerHTML = data.message;
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        result.className = "error";
+
+        result.innerHTML =
+            "Unable to connect to server.";
+    });
+}
+
+</script>
+
+</body>
+</html>

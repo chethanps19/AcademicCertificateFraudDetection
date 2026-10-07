@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Verification History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 95%;
+            margin: 30px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #4a90e2;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .back:hover {
+            background-color: #357abd;
+        }
+
+        .table-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #4a90e2;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+
+        .failed {
+            color: red;
+            font-weight: bold;
+        }
+
+        .hash {
+            font-size: 12px;
+            word-break: break-all;
+            max-width: 250px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Certificate Verification History</h1>
+
+    <a href="/admin" class="back">← Back to Admin</a>
+
+    <div class="table-container">
+
+        {% if history %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Certificate ID</th>
+                    <th>Uploaded Hash</th>
+                    <th>Database Match</th>
+                    <th>Blockchain Match</th>
+                    <th>Hash Match</th>
+                    <th>Status</th>
+                    <th>Verified At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for record in history %}
+
+                <tr>
+
+                    <td>
+                        {{ record.id }}
+                    </td>
+
+                    <td>
+                        {{ record.certificate_id }}
+                    </td>
+
+                    <td class="hash">
+                        {{ record.uploaded_hash }}
+                    </td>
+
+                    <td>
+                        {% if record.database_match %}
+                            <span class="success">✓ Match</span>
+                        {% else %}
+                            <span class="failed">✗ No Match</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if record.blockchain_match %}
+                            <span class="success">✓ Match</span>
+                        {% else %}
+                            <span class="failed">✗ No Match</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if record.hash_match %}
+                            <span class="success">✓ Match</span>
+                        {% else %}
+                            <span class="failed">✗ No Match</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if record.verification_status == "Valid" %}
+                            <span class="success">
+                                {{ record.verification_status }}
+                            </span>
+                        {% else %}
+                            <span class="failed">
+                                {{ record.verification_status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ record.verified_at }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        {% else %}
+
+        <div class="no-data">
+            No verification history available.
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
